@@ -10,7 +10,7 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post('https://localhost:500/api/login', {
+      const res = await axios.post('https://pass-3.onrender.com/api/login', {
         username,
         password,
       });
